@@ -1,0 +1,86 @@
+name: CI - Robocode, Checkstyle e SpotBugs com relatório Lucao
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  ROBOTS_JAVA_DIR: robocode/robots/github
+  ROBOTS_CLASS_DIR: robocode/robots/github
+
+jobs:
+  qualidade_e_seguranca:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Listar arquivos do projeto
+        run: |
+          echo "Verificando arquivos e pastas:"
+          ls -R
+          echo "Listando arquivos .java em $ROBOTS_JAVA_DIR:"
+          ls -l $ROBOTS_JAVA_DIR/*.java || echo "NÃO ACHOU .java EM $ROBOTS_JAVA_DIR"
+
+      - name: Setup Java 11 (para Checkstyle e SpotBugs)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Baixar Checkstyle
+        run: wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.4/checkstyle-10.12.4-all.jar -O checkstyle.jar
+
+      - name: Rodar Checkstyle
+        run: |
+          mkdir -p battle_logs
+          set +e
+          java -jar checkstyle.jar -c libs/google_checks.xml $ROBOTS_JAVA_DIR/*.java
+          echo $? > battle_logs/checkstyle_status.txt
+          set -e
+
+      - name: Baixar SpotBugs
+        run: wget https://repo1.maven.org/maven2/com/github/spotbugs/spotbugs/4.8.3/spotbugs-4.8.3.tgz -O spotbugs.tgz
+
+      - name: Extrair SpotBugs
+        run: tar -xzf spotbugs.tgz
+
+      - name: Dar permissão no SpotBugs
+        run: chmod +x spotbugs-4.8.3/bin/spotbugs
+
+      - name: Compilar robôs para SpotBugs
+        run: |
+          mkdir -p classes
+          javac -cp libs/robocode.jar:$ROBOTS_JAVA_DIR $ROBOTS_JAVA_DIR/*.java -d classes
+
+      - name: Rodar SpotBugs
+        run: |
+          set +e
+          spotbugs-4.8.3/bin/spotbugs -textui -effort:min -output battle_logs/spotbugs.txt classes
+          echo $? > battle_logs/spotbugs_status.txt
+          set -e
+
+      - name: Compilar robôs para a batalha do Robocode
+        run: |
+          mkdir -p robocode/robots/
+          javac -cp libs/robocode.jar $ROBOTS_JAVA_DIR/*.java -d robocode/robots/
+          echo $? > battle_logs/robocode_build_status.txt
+
+      - name: Rodar batalha entre robôs
+        run: |
+          bash scripts/testar_batalha.sh
+
+      - name: Listar conteúdo de battle_logs antes do upload
+        run: |
+          echo "Arquivos em battle_logs/"
+          ls -lh battle_logs/
+          cat battle_logs/report.html || echo "report.html não existe"
+
+      - name: Upload battle logs (relatório incluído!)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: battle-logs
+          path: battle_logs/
