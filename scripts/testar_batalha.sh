@@ -11,10 +11,10 @@ robocode.battle.numRounds=3
 robocode.battle.gunCoolingRate=0.1
 robocode.battle.rules.inactivityTime=450
 robocode.battle.hideEnemyNames=false
-robocode.battle.robots=github.Corners,github.RoboLucao
+robocode.battle.robots=github.Corners,github.Astroboys
 EOF
 
-echo "Rodando batalha entre os robôs github.Corners e github.RoboLucao..."
+echo "Rodando batalha entre os robôs github.Corners e github.Astroboys..."
 java -Xmx512M -cp libs/robocode.jar robocode.Robocode -battle battle_logs/sample_vs_sample.battle -nodisplay > battle_logs/sample_result.txt 2>&1 || true
 
 # Lê os status
