@@ -1,0 +1,57 @@
+cat > .github/workflows/ci.yml <<'YAML'
+name: "CI - Robocode, Checkstyle e SpotBugs com relatório! Autor: Nycolas Antony Salvego"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch: {} # permite rodar manualmente pelo GitHub Actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: 'maven'   # ativa cache automático para Maven (usa ~/.m2)
+
+      - name: Cache local .m2 (fallback / explicit)
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      - name: Show Java info
+        run: java -version && mvn -v
+
+      - name: Build and run Maven checks (Checkstyle + SpotBugs)
+        run: mvn -B clean verify
+
+      - name: Archive site and reports (zip)
+        if: always()
+        run: |
+          mkdir -p artifacts
+          # site may be in target/site, XML reports in target
+          if [ -d "target/site" ]; then zip -r artifacts/site.zip target/site; fi
+          if [ -f "target/checkstyle-result.xml" ]; then cp target/checkstyle-result.xml artifacts/; fi
+          if [ -f "target/spotbugs.xml" ]; then cp target/spotbugs.xml artifacts/; fi
+          if [ -f "target/spotbugsFilter.xml" ]; then cp target/spotbugsFilter.xml artifacts/; fi
+          ls -la artifacts || true
+
+      - name: Upload reports artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: artifacts
+YAML
