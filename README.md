@@ -89,10 +89,3 @@
 
 ---
 
-## ✨ Final tips (pro upgrades) / Dicas finais (para melhorar)
-
-| 🇺🇸 Tips | 🇧🇷 Dicas |
-|---|---|
-| - Add a `README-FAST.md` with minimal run commands and quick links.<br>- Consider using a small CI badge (build passing) on the repo header (shields.io).<br>- Improve the HTML report (add charts or per-round breakdown). | - Adicione um `README-FAST.md` com comandos essenciais e links rápidos.<br>- Considere incluir um badge de CI (build passing) no topo do README (shields.io).<br>- Melhore o relatório HTML (gráficos, breakdown por rodada). |
-
----
