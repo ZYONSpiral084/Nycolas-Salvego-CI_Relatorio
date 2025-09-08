@@ -1,7 +1,7 @@
 # 🔬 Robocode CI Report — Nycolas-Salvego  / # 🔬 Relatório CI Robocode — Nycolas-Salvego
 
 
-| 🇺🇸 English (left) | 🇧🇷 Português (right) |
+| 🇺🇸 English  | 🇧🇷 Português  |
 |---|---|
 | **Project**: Robocode CI pipeline, static analysis and automated battle reports. This repo bundles Robocode robots, a battle scenario, CI workflow (Checkstyle + SpotBugs), helper scripts and the libraries required to run local battles. | **Projeto**: Pipeline CI para Robocode, análise estática e geração automática de relatórios de batalha. Este repositório contém robôs Robocode, cenário de batalha, workflow CI (Checkstyle + SpotBugs), scripts utilitários e as bibliotecas necessárias para executar batalhas localmente. |
 
