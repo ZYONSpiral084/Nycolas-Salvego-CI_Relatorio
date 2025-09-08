@@ -1,4 +1,4 @@
-name: CI - Relatório: Robocode, Checkstyle e SpotBugs com relatório! Autor: Nycolas Antony Salvego
+name: CI - Relatório: Robocode, Checkstyle e SpotBugs com Nycolas Antony Salvego
 
 on:
   push:
